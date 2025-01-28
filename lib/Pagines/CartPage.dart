@@ -1,35 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uf1_nf1_pr3_hivedb/Data/base_de_dades.dart';
+
 class CartPage extends StatefulWidget {
   @override
   _CartPageState createState() => _CartPageState();
 }
 
 class _CartPageState extends State<CartPage> {
-  final Box cartBox = Hive.box('cartBox');
-
+  BaseDeDades db = BaseDeDades();
+  final Box cartBox = Hive.box("cartBox");
+ 
+  TextEditingController tecText = TextEditingController();
   void removeFromCart(int index) {
-    cartBox.deleteAt(index);
-    setState(() {});
-  }
+    setState(() {
+      cartBox.deleteAt(index);
+       db.actualizarDades();});
 
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: cartBox.length,
-      itemBuilder: (context, index) {
-        final product = cartBox.getAt(index);
-        return ListTile(
-          title: Text(product!.titol),
-          subtitle: Text('\$${product.price}'),
-          trailing: IconButton(
-            icon: Icon(Icons.remove_circle),
-            onPressed: () => removeFromCart(index),
-          ),
-        );
-      },
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Producto eliminado del carrito"))
     );
   }
+@override
+Widget build(BuildContext context) {
+  print("Contenido del carrito: ${cartBox.toMap()}");  // Verifica el contenido completo del carrito
+
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: Colors.black,
+      title: Text("Carrito de Compras"),
+    ),
+    body: cartBox.isEmpty
+        ? Center(child: Text("No hay productos en el carrito"))
+        : ListView.builder(
+            itemCount: cartBox.length,
+            itemBuilder: (context, index) {
+              Map product = cartBox.get(index);  // Usamos el índice para obtener el producto
+
+              return ListTile(
+                title: Text(product["titol"]),  // Mostrar el título del producto
+                trailing: IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => removeFromCart(index),  // Usamos el índice para eliminar
+                ),
+              );
+            },
+          ),
+  );
+}
+
 }
