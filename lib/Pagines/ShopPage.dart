@@ -12,6 +12,7 @@ class _ShopPageState extends State<ShopPage> {
   final Box _boxHive = Hive.box("Products");
   BaseDeDades db = BaseDeDades();
   TextEditingController tecText = TextEditingController();
+  TextEditingController tecPrecio = TextEditingController(); // Para el precio
 
   @override
   void initState() {
@@ -27,8 +28,10 @@ class _ShopPageState extends State<ShopPage> {
 
   void accioGuardar() {
     setState(() {
+      double precio = double.tryParse(tecPrecio.text) ?? 0.0;
       db.Products.add({
         "titol": tecText.text,
+        "precio": precio, 
         "valor": false,
       });
       db.actualizarDades();
@@ -39,6 +42,7 @@ class _ShopPageState extends State<ShopPage> {
   void acciocancelar() {
     Navigator.of(context).pop();
     tecText.clear();
+    tecPrecio.clear();
   }
 
   void accioEsborrarTasca(int posLlista) {
@@ -49,12 +53,13 @@ class _ShopPageState extends State<ShopPage> {
     Navigator.of(context).pop(); // Cierra el diálogo después de borrar
   }
 
-  void crearNovaTasca() {
+  void crearNuevaTarea() {
     showDialog(
       context: context,
       builder: (context) {
         return Productes(
           tecText: tecText,
+          tecPrecio: tecPrecio, // Pasamos el controlador del precio
           accioGuardar: accioGuardar,
           acciocancelar: acciocancelar,
         );
@@ -77,6 +82,7 @@ class _ShopPageState extends State<ShopPage> {
                 final product = db.Products[index];
                 return ListTile(
                   title: Text(product["titol"]),
+                  subtitle: Text("Precio: \$${_formatPrecio(product["precio"])}"),
                   trailing: IconButton(
                     icon: Icon(Icons.delete, color: Colors.red),
                     onPressed: () => accioEsborrarTasca(index),
@@ -90,27 +96,32 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
+  String _formatPrecio(dynamic precio) {
+    if (precio is num) {
+      return precio.toStringAsFixed(2);
+    }
+    return "0.00"; // Valor por defecto si no es válido
+  }
 
   void addToCart(Map product) {
-  String productTitle = product["titol"]; // Extrae solo el título
-  db.addToCart(product);  // Pasamos solo el título del producto
-  setState(() {});  // Forzamos la actualización de la UI
+    db.addToCart(product);
+    setState(() {});
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text("$productTitle añadido al carrito")),
-  );
-}
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("${product["titol"]} añadido al carrito")),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: Text("Shop",style: TextStyle(color: Colors.grey),),
+        title: Text("Shop", style: TextStyle(color: Colors.grey)),
         actions: [
           IconButton(
             icon: Icon(Icons.add, color: Colors.white),
-            onPressed: crearNovaTasca,
+            onPressed: crearNuevaTarea,
           ),
           IconButton(
             icon: Icon(Icons.delete, color: Colors.white),
@@ -121,13 +132,14 @@ class _ShopPageState extends State<ShopPage> {
       body: ListView.builder(
         itemCount: db.Products.length,
         itemBuilder: (context, index) {
-          final products = db.Products[index];
+          final product = db.Products[index];
 
           return ListTile(
-            title: Text(products["titol"]),
+            title: Text(product["titol"]),
+            subtitle: Text("Precio: \$${_formatPrecio(product["precio"])}"),
             trailing: IconButton(
               icon: Icon(Icons.add_shopping_cart, color: Colors.green),
-              onPressed: () => addToCart(products),
+              onPressed: () => addToCart(product),
             ),
           );
         },

@@ -3,43 +3,59 @@ import 'package:uf1_nf1_pr3_hivedb/Components/button.dart';
 
 class Productes extends StatelessWidget {
   final TextEditingController tecText;
-  final Function()?accioGuardar;
-   final Function()?acciocancelar;
-  const Productes ({super.key, required this.tecText, required this.accioGuardar, required this.acciocancelar});
+  final TextEditingController tecPrecio; // Controlador para el precio
+  final Function()? accioGuardar;
+  final Function()? acciocancelar;
+
+  const Productes({
+    super.key,
+    required this.tecText,
+    required this.tecPrecio, // Añadido controlador del precio
+    required this.accioGuardar,
+    required this.acciocancelar,
+  });
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Colors.teal[200],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10)
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       content: Container(
-        height: 150,
+        height: 200, // Ajustado para incluir el campo de precio
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            // Campo para el nombre del producto
             TextField(
               controller: tecText,
               cursorColor: Colors.orange[300],
               decoration: InputDecoration(
-              hintText: "Escriu el nombre del producte...",
-              border: OutlineInputBorder(),
-              filled: true,
-              fillColor: Colors.teal[100],
-              ),),
+                hintText: "Escribe el nombre del producto...",
+                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.teal[100],
+              ),
+            ),
             SizedBox(height: 10),
+            // Campo para el precio del producto
+            TextField(
+              controller: tecPrecio,
+              cursorColor: Colors.orange[300],
+              keyboardType: TextInputType.number, // Solo números
+              decoration: InputDecoration(
+                hintText: "Escribe el precio...",
+                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.teal[100],
+              ),
+            ),
+            SizedBox(height: 10),
+            // Botones de Guardar y Cancelar
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween ,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Button(
-                  TextBoto: "Guardar", 
-                  accioBoto:accioGuardar
-                  ),// Botó guardar.
-                Button(
-                  TextBoto: "Cancelar", 
-                  accioBoto: acciocancelar
-                   ),// Botó cancelar.
+                Button(TextBoto: "Guardar", accioBoto: accioGuardar),
+                Button(TextBoto: "Cancelar", accioBoto: acciocancelar),
               ],
             ),
           ],

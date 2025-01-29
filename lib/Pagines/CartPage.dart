@@ -24,19 +24,17 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-   
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: Text("Carrito de Compras", style: TextStyle(color: Colors.grey),),
+        title: Text("Carrito de Compras", style: TextStyle(color: Colors.grey)),
       ),
       body: cartBox.isEmpty
           ? Center(child: Text("No hay productos en el carrito"))
           : ListView.builder(
               itemCount: cartBox.length,
               itemBuilder: (context, index) {
-                Map product = cartBox.get(index); // Obtener el producto del carrito
+                Map product = cartBox.getAt(index);
 
                 return Padding(
                   padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
@@ -58,7 +56,8 @@ class _CartPageState extends State<CartPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: ListTile(
-                        title: Text(product["titol"]), // Mostrar el título del producto
+                        title: Text(product["titol"]),
+                        subtitle: Text("Precio: \$${(product["precio"] ?? 0.0).toDouble().toStringAsFixed(2)}"),
                         trailing: Icon(Icons.shopping_cart, color: const Color.fromARGB(255, 2, 250, 56)),
                       ),
                     ),
