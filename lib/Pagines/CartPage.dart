@@ -11,43 +11,61 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   BaseDeDades db = BaseDeDades();
   final Box cartBox = Hive.box("cartBox");
- 
-  TextEditingController tecText = TextEditingController();
+
   void removeFromCart(int index) {
     setState(() {
       cartBox.deleteAt(index);
-       db.actualizarDades();});
+    });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Producto eliminado del carrito"))
+      SnackBar(content: Text("Producto eliminado del carrito")),
     );
   }
-@override
-Widget build(BuildContext context) {
-  print("Contenido del carrito: ${cartBox.toMap()}");  // Verifica el contenido completo del carrito
 
-  return Scaffold(
-    appBar: AppBar(
-      backgroundColor: Colors.black,
-      title: Text("Carrito de Compras"),
-    ),
-    body: cartBox.isEmpty
-        ? Center(child: Text("No hay productos en el carrito"))
-        : ListView.builder(
-            itemCount: cartBox.length,
-            itemBuilder: (context, index) {
-              Map product = cartBox.get(index);  // Usamos el índice para obtener el producto
+  @override
+  Widget build(BuildContext context) {
+   
 
-              return ListTile(
-                title: Text(product["titol"]),  // Mostrar el título del producto
-                trailing: IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => removeFromCart(index),  // Usamos el índice para eliminar
-                ),
-              );
-            },
-          ),
-  );
-}
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: Text("Carrito de Compras", style: TextStyle(color: Colors.grey),),
+      ),
+      body: cartBox.isEmpty
+          ? Center(child: Text("No hay productos en el carrito"))
+          : ListView.builder(
+              itemCount: cartBox.length,
+              itemBuilder: (context, index) {
+                Map product = cartBox.get(index); // Obtener el producto del carrito
 
+                return Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+                  child: Slidable(
+                    endActionPane: ActionPane(
+                      motion: const StretchMotion(),
+                      children: [
+                        SlidableAction(
+                          icon: Icons.delete,
+                          backgroundColor: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                          onPressed: (context) => removeFromCart(index),
+                        ),
+                      ],
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 242, 247, 246),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ListTile(
+                        title: Text(product["titol"]), // Mostrar el título del producto
+                        trailing: Icon(Icons.shopping_cart, color: const Color.fromARGB(255, 2, 250, 56)),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+    );
+  }
 }
